@@ -4,6 +4,7 @@
 from __future__ import annotations
 
 import datetime as dt
+import hashlib
 import html
 import json
 import os
@@ -447,6 +448,19 @@ def update_readme(profile: dict) -> None:
     )
     if replacements != 1:
         raise ValueError("README.md is missing the profile contact markers")
+
+    raw_base = (
+        f"https://raw.githubusercontent.com/{profile['username']}"
+        f"/{profile['username']}/main"
+    )
+    for filename in ("dark_mode.svg", "light_mode.svg"):
+        version = hashlib.sha256((ROOT / filename).read_bytes()).hexdigest()[:12]
+        pattern = re.compile(
+            rf"({re.escape(raw_base)}/{re.escape(filename)}\?v=)[^\"'\s)]+"
+        )
+        updated, replacements = pattern.subn(rf"\g<1>{version}", updated, count=1)
+        if replacements != 1:
+            raise ValueError(f"README.md is missing the {filename} image URL")
     readme_path.write_text(updated, encoding="utf-8", newline="\n")
 
 
