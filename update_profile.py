@@ -22,10 +22,10 @@ BIRTH_DATE = os.environ.get("PROFILE_BIRTH_DATE", "2005-07-17")
 API_ROOT = "https://api.github.com"
 CACHE_PATH = ROOT / "cache" / "profile_stats.json"
 ALIGNMENT_COLUMNS = 60
-INLINE_STATS = (
-    ("repo_data_dots", "repo_data"),
-    ("commit_data_dots", "commit_data"),
-    ("loc_data_dots", "loc_data"),
+STAT_SEPARATOR_MARKERS = (
+    "repo_separator_dots",
+    "commit_separator_dots",
+    "loc_open_dots",
 )
 RULE_DOTS = ("header_dots", "contact_dots", "stats_dots")
 RIGHT_ALIGNED_DOTS = (
@@ -47,7 +47,6 @@ RIGHT_ALIGNED_DOTS = (
     "star_data_dots",
     "follower_data_dots",
 )
-RIGHT_ALIGNED_SPACES = ("loc_close_dots",)
 
 
 def github_get(path: str, params: dict[str, str] | None = None):
@@ -67,13 +66,13 @@ def github_get(path: str, params: dict[str, str] | None = None):
         return json.load(response)
 
 
-def owned_repositories() -> list[dict]:
+def user_repositories(repo_type: str) -> list[dict]:
     repositories: list[dict] = []
     page = 1
     while True:
         batch = github_get(
             f"/users/{USERNAME}/repos",
-            {"type": "owner", "per_page": "100", "page": str(page)},
+            {"type": repo_type, "per_page": "100", "page": str(page)},
         )
         repositories.extend(batch)
         if len(batch) < 100:
@@ -261,25 +260,63 @@ def align_rule(svg: str, rule_id: str) -> str:
     return svg[: match.start()] + match.group("prefix") + rule_fill(padding) + match.group("close") + match.group("suffix") + svg[match.end() :]
 
 
-def align_inline_stats(svg: str, values: dict[str, object]) -> str:
-    separator_column = ALIGNMENT_COLUMNS // 2 - 1
-    prefixes: dict[str, str] = {}
-    for dots_id, value_id in INLINE_STATS:
+def align_marker_to_column(svg: str, marker_id: str, column: int) -> str:
+    prefix = plain_text(marker_match(svg, marker_id).group("prefix")).lstrip()
+    padding = column - len(prefix)
+    if padding < 0:
+        raise ValueError(f"SVG marker overflows alignment column: {marker_id}")
+    return replace_tspan_value(svg, marker_id, " " * padding)
+
+
+def align_diff_group(svg: str, values: dict[str, object], open_column: int) -> str:
+    close_column = ALIGNMENT_COLUMNS - 1
+    additions = f"{values['loc_add']}++"
+    deletions = f"{values['loc_del']}--"
+    midpoint = (open_column + close_column + 1) // 2
+    minimum_comma = open_column + len(additions) + 2
+    maximum_comma = close_column - len(deletions) - 2
+    if minimum_comma > maximum_comma:
+        raise ValueError("LOC diff values overflow the stats row")
+    comma_column = min(max(midpoint, minimum_comma), maximum_comma)
+    left_width = comma_column - open_column - 1
+    right_width = close_column - comma_column - 1
+
+    left_padding = left_width - len(additions)
+    right_padding = right_width - len(deletions)
+    spaces = {
+        "loc_add_left_dots": (left_padding + 1) // 2,
+        "loc_add_right_dots": left_padding // 2,
+        "loc_del_left_dots": (right_padding + 1) // 2,
+        "loc_close_dots": right_padding // 2,
+    }
+    for marker_id, length in spaces.items():
+        svg = replace_tspan_value(svg, marker_id, " " * length)
+    return svg
+
+
+def align_stats(svg: str, values: dict[str, object]) -> str:
+    svg = replace_tspan_value(
+        svg, "repo_data_dots", terminal_dots(values["repo_data"], 6)
+    )
+    repo_prefix = plain_text(
+        marker_match(svg, "repo_separator_dots").group("prefix")
+    ).lstrip()
+    separator_column = max(ALIGNMENT_COLUMNS // 2 - 1, len(repo_prefix))
+
+    for dots_id, value_id in (
+        ("commit_data_dots", "commit_data"),
+        ("loc_data_dots", "loc_data"),
+    ):
         prefix = plain_text(marker_match(svg, dots_id).group("prefix")).lstrip()
-        prefixes[dots_id] = prefix
-        separator_column = max(
-            separator_column,
-            len(prefix) + len(str(values[value_id])),
-        )
-    for dots_id, value_id in INLINE_STATS:
         svg = replace_tspan_value(
             svg,
             dots_id,
-            terminal_dots(
-                values[value_id], separator_column - len(prefixes[dots_id])
-            ),
+            terminal_dots(values[value_id], separator_column - 1 - len(prefix)),
         )
-    return svg
+
+    for marker_id in STAT_SEPARATOR_MARKERS:
+        svg = align_marker_to_column(svg, marker_id, separator_column)
+    return align_diff_group(svg, values, separator_column)
 
 
 def replace_tspan_value(svg: str, element_id: str, value: object) -> str:
@@ -303,21 +340,28 @@ def update_svg(path: Path, values: dict[str, object]) -> None:
         svg = replace_tspan_value(svg, element_id, value)
     for rule_id in RULE_DOTS:
         svg = align_rule(svg, rule_id)
-    svg = align_inline_stats(svg, values)
+    svg = align_stats(svg, values)
     for dots_id in RIGHT_ALIGNED_DOTS:
         svg = right_align_marker(svg, dots_id, dot_fill)
-    for spaces_id in RIGHT_ALIGNED_SPACES:
-        svg = right_align_marker(svg, spaces_id, lambda length: " " * length)
     path.write_text(svg, encoding="utf-8", newline="\n")
 
 
 def main() -> None:
     user = github_get(f"/users/{USERNAME}")
-    repositories = owned_repositories()
+    repositories = user_repositories("all")
+    owned_repositories = [
+        repository
+        for repository in repositories
+        if repository.get("owner", {}).get("login", "").lower()
+        == USERNAME.lower()
+    ]
     additions, deletions = lines_of_code(repositories)
     uptime = account_age(BIRTH_DATE)
-    repos = format_number(user.get("public_repos", len(repositories)))
-    stars = format_number(sum(repo.get("stargazers_count", 0) for repo in repositories))
+    repos = format_number(user.get("public_repos", len(owned_repositories)))
+    contributed = format_number(len(repositories))
+    stars = format_number(
+        sum(repo.get("stargazers_count", 0) for repo in owned_repositories)
+    )
     commits = format_number(commit_count())
     followers = format_number(user.get("followers", 0))
     loc = format_number(additions - deletions)
@@ -326,6 +370,7 @@ def main() -> None:
     values = {
         "uptime_data": uptime,
         "repo_data": repos,
+        "contrib_data": contributed,
         "star_data": stars,
         "commit_data": commits,
         "follower_data": followers,
