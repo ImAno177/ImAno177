@@ -25,6 +25,7 @@ ALIGNMENT_COLUMNS = 60
 INLINE_STATS = (
     ("repo_data_dots", "repo_data"),
     ("commit_data_dots", "commit_data"),
+    ("loc_data_dots", "loc_data"),
 )
 RIGHT_ALIGNED_DOTS = (
     "os_data_dots",
@@ -44,7 +45,6 @@ RIGHT_ALIGNED_DOTS = (
     "github_data_dots",
     "star_data_dots",
     "follower_data_dots",
-    "loc_data_dots",
 )
 
 
