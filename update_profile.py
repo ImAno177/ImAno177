@@ -22,6 +22,7 @@ BIRTH_DATE = os.environ.get("PROFILE_BIRTH_DATE", "2005-07-17")
 API_ROOT = "https://api.github.com"
 CACHE_PATH = ROOT / "cache" / "profile_stats.json"
 ALIGNMENT_COLUMNS = 60
+STATS_SEPARATOR_COLUMN = 20
 RIGHT_ALIGNED_DOTS = (
     "os_data_dots",
     "uptime_data_dots",
@@ -267,12 +268,23 @@ def main() -> None:
     loc = format_number(additions - deletions)
     loc_add = format_number(additions)
     loc_del = format_number(deletions)
+    repo_prefix_width = len(". Repos:")
+    commit_prefix_width = len(". Commits:")
+    stats_separator_column = max(
+        STATS_SEPARATOR_COLUMN,
+        repo_prefix_width + len(str(repos)),
+        commit_prefix_width + len(str(commits)),
+    )
     values = {
         "uptime_data": uptime,
-        "repo_data_dots": terminal_dots(repos, 6),
+        "repo_data_dots": terminal_dots(
+            repos, stats_separator_column - repo_prefix_width
+        ),
         "repo_data": repos,
         "star_data": stars,
-        "commit_data_dots": terminal_dots(commits, 23),
+        "commit_data_dots": terminal_dots(
+            commits, stats_separator_column - commit_prefix_width
+        ),
         "commit_data": commits,
         "follower_data": followers,
         "loc_data": loc,
