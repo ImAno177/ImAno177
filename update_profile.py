@@ -8,6 +8,8 @@ import html
 import json
 import os
 import re
+import time
+from concurrent.futures import ThreadPoolExecutor
 from pathlib import Path
 from urllib.error import HTTPError
 from urllib.parse import urlencode
@@ -16,7 +18,9 @@ from urllib.request import Request, urlopen
 
 ROOT = Path(__file__).resolve().parent
 USERNAME = os.environ.get("GITHUB_USERNAME", "ImAno177")
+BIRTH_DATE = os.environ.get("PROFILE_BIRTH_DATE", "2005-07-17")
 API_ROOT = "https://api.github.com"
+CACHE_PATH = ROOT / "cache" / "profile_stats.json"
 
 
 def github_get(path: str, params: dict[str, str] | None = None):
@@ -61,13 +65,93 @@ def commit_count() -> int | str:
         return "n/a"
 
 
+def contributor_stats(repository: dict) -> tuple[list[dict], bool]:
+    """Return contributor stats and whether GitHub returned a complete result."""
+    for attempt in range(4):
+        try:
+            result = github_get(f"/repos/{repository['full_name']}/stats/contributors")
+            if isinstance(result, list):
+                return result, True
+        except (HTTPError, ValueError, TypeError):
+            pass
+        if attempt < 3:
+            time.sleep(2)
+    return [], False
+
+
+def repository_loc(repository: dict) -> tuple[int, int, bool]:
+    additions = 0
+    deletions = 0
+    stats, complete = contributor_stats(repository)
+    if not complete:
+        return additions, deletions, False
+    for contributor in stats:
+        author = contributor.get("author") or {}
+        if author.get("login", "").lower() != USERNAME.lower():
+            continue
+        for week in contributor.get("weeks", []):
+            additions += int(week.get("a", 0))
+            deletions += int(week.get("d", 0))
+    return additions, deletions, True
+
+
+def read_loc_cache() -> dict:
+    try:
+        return json.loads(CACHE_PATH.read_text(encoding="utf-8"))
+    except (FileNotFoundError, json.JSONDecodeError):
+        return {}
+
+
+def lines_of_code(repositories: list[dict]) -> tuple[int, int]:
+    """Use a small persistent cache so daily runs only inspect changed repos."""
+    old_cache = read_loc_cache().get("repositories", {})
+    entries: dict[str, dict] = {}
+    pending: list[dict] = []
+
+    for repository in repositories:
+        key = repository["full_name"]
+        pushed_at = repository.get("pushed_at") or repository.get("updated_at")
+        cached = old_cache.get(key, {})
+        if cached.get("pushed_at") == pushed_at and cached.get("complete"):
+            entries[key] = cached
+        else:
+            pending.append(repository)
+
+    with ThreadPoolExecutor(max_workers=min(6, len(pending)) or 1) as pool:
+        futures = {
+            pool.submit(repository_loc, repository): repository for repository in pending
+        }
+        for future, repository in futures.items():
+            key = repository["full_name"]
+            pushed_at = repository.get("pushed_at") or repository.get("updated_at")
+            additions, deletions, complete = future.result()
+            if not complete and key in old_cache:
+                entries[key] = old_cache[key]
+            else:
+                entries[key] = {
+                    "additions": additions,
+                    "deletions": deletions,
+                    "pushed_at": pushed_at,
+                    "complete": complete,
+                }
+
+    CACHE_PATH.parent.mkdir(parents=True, exist_ok=True)
+    CACHE_PATH.write_text(
+        json.dumps({"repositories": entries}, indent=2, sort_keys=True) + "\n",
+        encoding="utf-8",
+    )
+    additions = sum(int(entry.get("additions", 0)) for entry in entries.values())
+    deletions = sum(int(entry.get("deletions", 0)) for entry in entries.values())
+    return additions, deletions
+
+
 def days_in_month(year: int, month: int) -> int:
     first_of_next = dt.date(year + (month == 12), 1 if month == 12 else month + 1, 1)
     return (first_of_next - dt.timedelta(days=1)).day
 
 
-def account_age(created_at: str) -> str:
-    created = dt.datetime.fromisoformat(created_at.replace("Z", "+00:00"))
+def account_age(start_date: str) -> str:
+    created = dt.datetime.fromisoformat(start_date.replace("Z", "+00:00"))
     today = dt.datetime.now(dt.timezone.utc)
     years = today.year - created.year
     months = today.month - created.month
@@ -88,6 +172,10 @@ def account_age(created_at: str) -> str:
     return ", ".join(
         [plural(years, "year"), plural(months, "month"), plural(days, "day")]
     )
+
+
+def format_number(value: int | str) -> int | str:
+    return f"{value:,}" if isinstance(value, int) else value
 
 
 def replace_tspan_value(svg: str, element_id: str, value: object) -> str:
@@ -115,13 +203,16 @@ def update_svg(path: Path, values: dict[str, object]) -> None:
 def main() -> None:
     user = github_get(f"/users/{USERNAME}")
     repositories = owned_repositories()
+    additions, deletions = lines_of_code(repositories)
     values = {
-        "uptime_data": account_age(user["created_at"]),
-        "repo_data": user.get("public_repos", len(repositories)),
-        "star_data": sum(repo.get("stargazers_count", 0) for repo in repositories),
-        "commit_data": commit_count(),
-        "follower_data": user.get("followers", 0),
-        "updated_data": dt.datetime.now(dt.timezone.utc).strftime("%Y-%m-%d %H:%MZ"),
+        "uptime_data": account_age(BIRTH_DATE),
+        "repo_data": format_number(user.get("public_repos", len(repositories))),
+        "star_data": format_number(sum(repo.get("stargazers_count", 0) for repo in repositories)),
+        "commit_data": format_number(commit_count()),
+        "follower_data": format_number(user.get("followers", 0)),
+        "loc_data": format_number(additions - deletions),
+        "loc_add": format_number(additions),
+        "loc_del": format_number(deletions),
     }
     for filename in ("dark_mode.svg", "light_mode.svg"):
         update_svg(ROOT / filename, values)
