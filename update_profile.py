@@ -139,6 +139,7 @@ def lines_of_code(repositories: list[dict]) -> tuple[int, int]:
     CACHE_PATH.write_text(
         json.dumps({"repositories": entries}, indent=2, sort_keys=True) + "\n",
         encoding="utf-8",
+        newline="\n",
     )
     additions = sum(int(entry.get("additions", 0)) for entry in entries.values())
     deletions = sum(int(entry.get("deletions", 0)) for entry in entries.values())
