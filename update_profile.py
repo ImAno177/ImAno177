@@ -21,6 +21,27 @@ USERNAME = os.environ.get("GITHUB_USERNAME", "ImAno177")
 BIRTH_DATE = os.environ.get("PROFILE_BIRTH_DATE", "2005-07-17")
 API_ROOT = "https://api.github.com"
 CACHE_PATH = ROOT / "cache" / "profile_stats.json"
+ALIGNMENT_COLUMNS = 60
+RIGHT_ALIGNED_DOTS = (
+    "os_data_dots",
+    "uptime_data_dots",
+    "host_data_dots",
+    "kernel_data_dots",
+    "ide_data_dots",
+    "programming_data_dots",
+    "computer_data_dots",
+    "real_data_dots",
+    "software_data_dots",
+    "hardware_data_dots",
+    "email_data_dots",
+    "gmail_data_dots",
+    "discord_data_dots",
+    "portfolio_data_dots",
+    "github_data_dots",
+    "star_data_dots",
+    "follower_data_dots",
+    "loc_data_dots",
+)
 
 
 def github_get(path: str, params: dict[str, str] | None = None):
@@ -179,6 +200,37 @@ def format_number(value: int | str) -> int | str:
     return f"{value:,}" if isinstance(value, int) else value
 
 
+def dot_fill(length: int) -> str:
+    if length <= 0:
+        return ""
+    if length == 1:
+        return " "
+    if length == 2:
+        return ". "
+    return " " + "." * (length - 2) + " "
+
+
+def terminal_dots(value: object, width: int) -> str:
+    return dot_fill(width - len(str(value)))
+
+
+def right_align_dots(svg: str, dots_id: str) -> str:
+    pattern = re.compile(
+        rf'(?m)^(?P<prefix>.*?<tspan\b[^>]*\bid=["\']{re.escape(dots_id)}["\'][^>]*>)'
+        rf'(?P<dots>.*?)(?P<close></tspan>)(?P<suffix>.*)$'
+    )
+    match = pattern.search(svg)
+    if match is None:
+        raise ValueError(f"Missing SVG marker: {dots_id}")
+    strip_tags = lambda value: html.unescape(re.sub(r"<[^>]+>", "", value))
+    prefix = strip_tags(match.group("prefix")).lstrip()
+    suffix = strip_tags(match.group("suffix")).strip()
+    padding = ALIGNMENT_COLUMNS - len(prefix) - len(suffix)
+    if padding < 0:
+        raise ValueError(f"SVG field overflows alignment column: {dots_id}")
+    return svg[: match.start()] + match.group("prefix") + dot_fill(padding) + match.group("close") + match.group("suffix") + svg[match.end() :]
+
+
 def replace_tspan_value(svg: str, element_id: str, value: object) -> str:
     pattern = re.compile(
         rf'(<tspan\b[^>]*\bid=["\']{re.escape(element_id)}["\'][^>]*>).*?(</tspan>)',
@@ -198,6 +250,8 @@ def update_svg(path: Path, values: dict[str, object]) -> None:
     svg = path.read_text(encoding="utf-8")
     for element_id, value in values.items():
         svg = replace_tspan_value(svg, element_id, value)
+    for dots_id in RIGHT_ALIGNED_DOTS:
+        svg = right_align_dots(svg, dots_id)
     path.write_text(svg, encoding="utf-8", newline="\n")
 
 
@@ -205,15 +259,26 @@ def main() -> None:
     user = github_get(f"/users/{USERNAME}")
     repositories = owned_repositories()
     additions, deletions = lines_of_code(repositories)
+    uptime = account_age(BIRTH_DATE)
+    repos = format_number(user.get("public_repos", len(repositories)))
+    stars = format_number(sum(repo.get("stargazers_count", 0) for repo in repositories))
+    commits = format_number(commit_count())
+    followers = format_number(user.get("followers", 0))
+    loc = format_number(additions - deletions)
+    loc_add = format_number(additions)
+    loc_del = format_number(deletions)
     values = {
-        "uptime_data": account_age(BIRTH_DATE),
-        "repo_data": format_number(user.get("public_repos", len(repositories))),
-        "star_data": format_number(sum(repo.get("stargazers_count", 0) for repo in repositories)),
-        "commit_data": format_number(commit_count()),
-        "follower_data": format_number(user.get("followers", 0)),
-        "loc_data": format_number(additions - deletions),
-        "loc_add": format_number(additions),
-        "loc_del": format_number(deletions),
+        "uptime_data": uptime,
+        "repo_data_dots": terminal_dots(repos, 6),
+        "repo_data": repos,
+        "star_data": stars,
+        "commit_data_dots": terminal_dots(commits, 23),
+        "commit_data": commits,
+        "follower_data": followers,
+        "loc_data": loc,
+        "loc_add": loc_add,
+        "loc_del_dots": terminal_dots(loc_del, 7),
+        "loc_del": loc_del,
     }
     for filename in ("dark_mode.svg", "light_mode.svg"):
         update_svg(ROOT / filename, values)
