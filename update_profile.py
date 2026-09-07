@@ -376,7 +376,6 @@ def main() -> None:
         "follower_data": followers,
         "loc_data": loc,
         "loc_add": loc_add,
-        "loc_del_dots": terminal_dots(loc_del, 7),
         "loc_del": loc_del,
     }
     for filename in ("dark_mode.svg", "light_mode.svg"):
