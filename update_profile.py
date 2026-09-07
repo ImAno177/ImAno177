@@ -27,6 +27,7 @@ INLINE_STATS = (
     ("commit_data_dots", "commit_data"),
     ("loc_data_dots", "loc_data"),
 )
+RULE_DOTS = ("header_dots", "contact_dots", "stats_dots")
 RIGHT_ALIGNED_DOTS = (
     "os_data_dots",
     "uptime_data_dots",
@@ -214,6 +215,12 @@ def dot_fill(length: int) -> str:
     return " " + "." * (length - 2) + " "
 
 
+def rule_fill(length: int) -> str:
+    if length <= 0:
+        return ""
+    return " " + "-" * (length - 1)
+
+
 def terminal_dots(value: object, width: int) -> str:
     return dot_fill(width - len(str(value)))
 
@@ -241,6 +248,16 @@ def right_align_dots(svg: str, dots_id: str) -> str:
     if padding < 0:
         raise ValueError(f"SVG field overflows alignment column: {dots_id}")
     return svg[: match.start()] + match.group("prefix") + dot_fill(padding) + match.group("close") + match.group("suffix") + svg[match.end() :]
+
+
+def align_rule(svg: str, rule_id: str) -> str:
+    match = marker_match(svg, rule_id)
+    prefix = plain_text(match.group("prefix")).lstrip()
+    suffix = plain_text(match.group("suffix")).strip()
+    padding = ALIGNMENT_COLUMNS - len(prefix) - len(suffix)
+    if padding < 0:
+        raise ValueError(f"SVG rule overflows alignment column: {rule_id}")
+    return svg[: match.start()] + match.group("prefix") + rule_fill(padding) + match.group("close") + match.group("suffix") + svg[match.end() :]
 
 
 def align_inline_stats(svg: str, values: dict[str, object]) -> str:
@@ -283,6 +300,8 @@ def update_svg(path: Path, values: dict[str, object]) -> None:
     svg = path.read_text(encoding="utf-8")
     for element_id, value in values.items():
         svg = replace_tspan_value(svg, element_id, value)
+    for rule_id in RULE_DOTS:
+        svg = align_rule(svg, rule_id)
     svg = align_inline_stats(svg, values)
     for dots_id in RIGHT_ALIGNED_DOTS:
         svg = right_align_dots(svg, dots_id)
