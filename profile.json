@@ -2,24 +2,24 @@
   "username": "ImAno177",
   "birth_date": "2005-07-17",
   "terminal": {
-    "os": "Windows / Linux",
+    "os": "Windows // Linux",
     "host": "ImAno177",
-    "kernel": "[YOUR ROLE]",
+    "kernel": "Cloud Security / Web3 Security",
     "ide": "VS Code",
     "languages": {
-      "programming": "JavaScript, TypeScript",
+      "programming": "Go, C++, Python, JavaScript, TypeScript",
       "computer": "HTML, CSS, Markdown",
       "real": "Vietnamese, English"
     },
     "hobbies": {
-      "software": "Ricing, UI experiments",
-      "hardware": "[YOUR SETUP]"
+      "software": "Self-hosting",
+      "hardware": "DIY NAS, PC"
     }
   },
   "contact": {
-    "email": "your.email@example.com",
+    "email": "bachchi17705@gmail.com",
     "gmail": "your.gmail@gmail.com",
-    "discord": "YOUR_DISCORD_ID",
+    "discord": "imbot177",
     "portfolio": "https://imano177.github.io/portfolio/"
   }
 }
