@@ -17,8 +17,7 @@ from urllib.request import Request, urlopen
 
 
 ROOT = Path(__file__).resolve().parent
-USERNAME = os.environ.get("GITHUB_USERNAME", "ImAno177")
-BIRTH_DATE = os.environ.get("PROFILE_BIRTH_DATE", "2005-07-17")
+PROFILE_PATH = ROOT / "profile.json"
 API_ROOT = "https://api.github.com"
 CACHE_PATH = ROOT / "cache" / "profile_stats.json"
 ALIGNMENT_COLUMNS = 60
@@ -47,6 +46,32 @@ RIGHT_ALIGNED_DOTS = (
     "star_data_dots",
     "follower_data_dots",
 )
+
+
+def load_profile() -> dict:
+    profile = json.loads(PROFILE_PATH.read_text(encoding="utf-8"))
+    sections = {
+        "terminal": ("os", "host", "kernel", "ide"),
+        "contact": ("email", "gmail", "discord", "portfolio"),
+    }
+    if not isinstance(profile, dict) or not isinstance(profile.get("username"), str) or not profile["username"]:
+        raise ValueError("profile.json must define a non-empty username")
+    if not isinstance(profile.get("birth_date"), str) or not profile["birth_date"]:
+        raise ValueError("profile.json must define a non-empty birth_date")
+    for section, keys in sections.items():
+        values = profile.get(section)
+        if not isinstance(values, dict) or any(not isinstance(values.get(key), str) for key in keys):
+            raise ValueError(f"profile.json is missing valid {section} fields")
+    for section in ("languages", "hobbies"):
+        values = profile["terminal"].get(section)
+        if not isinstance(values, dict) or any(not isinstance(value, str) for value in values.values()):
+            raise ValueError(f"profile.json is missing valid terminal.{section} fields")
+    return profile
+
+
+PROFILE = load_profile()
+USERNAME = PROFILE["username"]
+BIRTH_DATE = PROFILE["birth_date"]
 
 
 def github_get(path: str, params: dict[str, str] | None = None):
@@ -205,6 +230,28 @@ def format_number(value: int | str) -> int | str:
     return f"{value:,}" if isinstance(value, int) else value
 
 
+def profile_values(profile: dict) -> dict[str, str]:
+    terminal = profile["terminal"]
+    contact = profile["contact"]
+    portfolio = contact["portfolio"].rstrip("/")
+    return {
+        "os_data": terminal["os"],
+        "host_data": terminal["host"],
+        "kernel_data": terminal["kernel"],
+        "ide_data": terminal["ide"],
+        "programming_data": terminal["languages"]["programming"],
+        "computer_data": terminal["languages"]["computer"],
+        "real_data": terminal["languages"]["real"],
+        "software_data": terminal["hobbies"]["software"],
+        "hardware_data": terminal["hobbies"]["hardware"],
+        "email_data": contact["email"],
+        "gmail_data": contact["gmail"],
+        "discord_data": contact["discord"],
+        "portfolio_data": re.sub(r"^https?://", "", portfolio),
+        "github_data": f"github.com/{profile['username']}",
+    }
+
+
 def dot_fill(length: int) -> str:
     if length <= 0:
         return ""
@@ -346,6 +393,29 @@ def update_svg(path: Path, values: dict[str, object]) -> None:
     path.write_text(svg, encoding="utf-8", newline="\n")
 
 
+def update_readme(profile: dict) -> None:
+    readme_path = ROOT / "README.md"
+    readme = readme_path.read_text(encoding="utf-8")
+    contact = profile["contact"]
+    links = (
+        f"[Email](mailto:{contact['email']}) · "
+        f"[Gmail](mailto:{contact['gmail']}) · "
+        f"[Discord](https://discord.com/users/{contact['discord']}) · "
+        f"[Portfolio]({contact['portfolio']})"
+    )
+    pattern = re.compile(
+        r"(?ms)(<!-- profile-contact:start -->\n).*?(\n<!-- profile-contact:end -->)"
+    )
+    updated, replacements = pattern.subn(
+        lambda match: f"{match.group(1)}{links}{match.group(2)}",
+        readme,
+        count=1,
+    )
+    if replacements != 1:
+        raise ValueError("README.md is missing the profile contact markers")
+    readme_path.write_text(updated, encoding="utf-8", newline="\n")
+
+
 def main() -> None:
     user = github_get(f"/users/{USERNAME}")
     repositories = user_repositories("all")
@@ -367,7 +437,8 @@ def main() -> None:
     loc = format_number(additions - deletions)
     loc_add = format_number(additions)
     loc_del = format_number(deletions)
-    values = {
+    values = profile_values(PROFILE)
+    values.update({
         "uptime_data": uptime,
         "repo_data": repos,
         "contrib_data": contributed,
@@ -377,9 +448,10 @@ def main() -> None:
         "loc_data": loc,
         "loc_add": loc_add,
         "loc_del": loc_del,
-    }
+    })
     for filename in ("dark_mode.svg", "light_mode.svg"):
         update_svg(ROOT / filename, values)
+    update_readme(PROFILE)
     print(json.dumps(values, indent=2, sort_keys=True))
 
 

@@ -5,4 +5,6 @@
   </picture>
 </a>
 
+<!-- profile-contact:start -->
 [Email](mailto:your.email@example.com) · [Gmail](mailto:your.gmail@gmail.com) · [Discord](https://discord.com/users/YOUR_DISCORD_ID) · [Portfolio](https://imano177.github.io/portfolio/)
+<!-- profile-contact:end -->
