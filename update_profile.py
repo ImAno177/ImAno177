@@ -47,6 +47,7 @@ RIGHT_ALIGNED_DOTS = (
     "star_data_dots",
     "follower_data_dots",
 )
+RIGHT_ALIGNED_SPACES = ("loc_close_dots",)
 
 
 def github_get(path: str, params: dict[str, str] | None = None):
@@ -240,14 +241,14 @@ def plain_text(value: str) -> str:
     return html.unescape(re.sub(r"<[^>]+>", "", value))
 
 
-def right_align_dots(svg: str, dots_id: str) -> str:
-    match = marker_match(svg, dots_id)
+def right_align_marker(svg: str, marker_id: str, fill) -> str:
+    match = marker_match(svg, marker_id)
     prefix = plain_text(match.group("prefix")).lstrip()
     suffix = plain_text(match.group("suffix")).strip()
     padding = ALIGNMENT_COLUMNS - len(prefix) - len(suffix)
     if padding < 0:
-        raise ValueError(f"SVG field overflows alignment column: {dots_id}")
-    return svg[: match.start()] + match.group("prefix") + dot_fill(padding) + match.group("close") + match.group("suffix") + svg[match.end() :]
+        raise ValueError(f"SVG field overflows alignment column: {marker_id}")
+    return svg[: match.start()] + match.group("prefix") + fill(padding) + match.group("close") + match.group("suffix") + svg[match.end() :]
 
 
 def align_rule(svg: str, rule_id: str) -> str:
@@ -304,7 +305,9 @@ def update_svg(path: Path, values: dict[str, object]) -> None:
         svg = align_rule(svg, rule_id)
     svg = align_inline_stats(svg, values)
     for dots_id in RIGHT_ALIGNED_DOTS:
-        svg = right_align_dots(svg, dots_id)
+        svg = right_align_marker(svg, dots_id, dot_fill)
+    for spaces_id in RIGHT_ALIGNED_SPACES:
+        svg = right_align_marker(svg, spaces_id, lambda length: " " * length)
     path.write_text(svg, encoding="utf-8", newline="\n")
 
 
