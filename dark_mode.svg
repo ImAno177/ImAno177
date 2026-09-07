@@ -41,7 +41,7 @@
     <tspan x="0" y="394">⠀⠀⠀⠀⠀⠀⠀⠈⠛⠻⠿⠿⠿⠿⠋⠁⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀</tspan>
   </text>
 
-  <text x="390" y="30" fill="#c9d1d9">
+  <text x="390" y="30" fill="#c9d1d9" transform="translate(-25 0)">
     <tspan x="390" y="30">imano@github</tspan><tspan class="cc"> ------------------------------------------</tspan>
     <tspan x="390" y="50" class="cc">. </tspan><tspan class="key">OS</tspan>:<tspan class="cc"> ......................... </tspan><tspan class="value">Windows / Linux</tspan>
     <tspan x="390" y="70" class="cc">. </tspan><tspan class="key">Uptime</tspan>:<tspan class="cc"> ............... </tspan><tspan class="value" id="uptime_data">21 years, 1 month, 21 days</tspan>
