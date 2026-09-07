@@ -1,5 +1,17 @@
 {
   "repositories": {
+    "Hac1es/FriendwithBooks-Backend": {
+      "additions": 124,
+      "complete": true,
+      "deletions": 63,
+      "pushed_at": "2025-06-18T10:21:26Z"
+    },
+    "Hac1es/FriendwithBooks-Frontend": {
+      "additions": 8621,
+      "complete": true,
+      "deletions": 4144,
+      "pushed_at": "2025-06-18T10:20:52Z"
+    },
     "ImAno177/CSDL-UIT": {
       "additions": 3438,
       "complete": true,
@@ -13,10 +25,10 @@
       "pushed_at": "2026-07-31T04:49:09Z"
     },
     "ImAno177/ImAno177": {
-      "additions": 996,
+      "additions": 1076,
       "complete": true,
-      "deletions": 304,
-      "pushed_at": "2026-09-07T03:59:42Z"
+      "deletions": 340,
+      "pushed_at": "2026-09-07T04:49:17Z"
     },
     "ImAno177/NT213_garak": {
       "additions": 43985,
@@ -143,6 +155,18 @@
       "complete": true,
       "deletions": 34,
       "pushed_at": "2026-05-13T02:25:26Z"
+    },
+    "biniter1/NT106_-_-n": {
+      "additions": 10123,
+      "complete": true,
+      "deletions": 7110,
+      "pushed_at": "2025-07-15T08:17:08Z"
+    },
+    "vuongdat67/NT334_G7": {
+      "additions": 308,
+      "complete": true,
+      "deletions": 175,
+      "pushed_at": "2026-06-20T17:18:21Z"
     }
   }
 }
