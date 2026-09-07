@@ -65,7 +65,7 @@
     <tspan x="390" y="430" class="cc">. </tspan>
     <tspan x="390" y="450">- GitHub Stats</tspan><tspan class="cc"> -----------------------------------</tspan>
     <tspan x="390" y="470" class="cc">. </tspan><tspan class="key">Repos</tspan>:<tspan class="cc"> .......... </tspan><tspan class="value" id="repo_data">24</tspan><tspan class="cc"> | </tspan><tspan class="key">Stars</tspan>:<tspan class="cc"> ......... </tspan><tspan class="value" id="star_data">0</tspan>
-    <tspan x="390" y="490" class="cc">. </tspan><tspan class="key">Commits</tspan>:<tspan class="cc"> ......... </tspan><tspan class="value" id="commit_data">314</tspan><tspan class="cc"> | </tspan><tspan class="key">Followers</tspan>:<tspan class="cc"> .. </tspan><tspan class="value" id="follower_data">1</tspan>
-    <tspan x="390" y="510" class="cc">. </tspan><tspan class="key">Lines of Code</tspan>:<tspan class="cc"> ....... </tspan><tspan class="value" id="loc_data">1,202,052</tspan> ( <tspan class="accent" id="loc_add">1,271,029</tspan><tspan class="accent">++</tspan>, <tspan class="delColor" id="loc_del">68,977</tspan><tspan class="delColor">--</tspan> )
+    <tspan x="390" y="490" class="cc">. </tspan><tspan class="key">Commits</tspan>:<tspan class="cc"> ......... </tspan><tspan class="value" id="commit_data">315</tspan><tspan class="cc"> | </tspan><tspan class="key">Followers</tspan>:<tspan class="cc"> .. </tspan><tspan class="value" id="follower_data">1</tspan>
+    <tspan x="390" y="510" class="cc">. </tspan><tspan class="key">Lines of Code</tspan>:<tspan class="cc"> ....... </tspan><tspan class="value" id="loc_data">1,202,283</tspan> ( <tspan class="accent" id="loc_add">1,271,329</tspan><tspan class="accent">++</tspan>, <tspan class="delColor" id="loc_del">69,046</tspan><tspan class="delColor">--</tspan> )
   </text>
 </svg>
