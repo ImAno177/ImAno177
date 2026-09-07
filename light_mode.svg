@@ -1,0 +1,35 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="960" height="340" viewBox="0 0 960 340" role="img" aria-labelledby="title desc">
+  <title id="title">ImAno177 GitHub profile</title>
+  <desc id="desc">A minimal light GitHub profile card with placeholder contact details and a portfolio link.</desc>
+  <style>
+    .background { fill: #ffffff; }
+    .frame { fill: #ffffff; stroke: #d0d7de; stroke-width: 1; }
+    .divider { stroke: #d8dee4; stroke-width: 1; }
+    .text { fill: #1f2328; font-family: ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; }
+    .mono { fill: #59636e; font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; }
+    .accent { fill: #1a7f37; }
+    .link { fill: #0969da; }
+  </style>
+
+  <rect class="background" width="960" height="340" />
+  <rect class="frame" x="24" y="24" width="912" height="292" rx="8" />
+  <text class="mono" x="52" y="64" font-size="13" letter-spacing="2">IMANO177 / GITHUB PROFILE</text>
+  <circle class="accent" cx="884" cy="58" r="5" />
+  <line class="divider" x1="52" y1="88" x2="908" y2="88" />
+
+  <text class="text" x="52" y="152" font-size="38" font-weight="700">[YOUR NAME]</text>
+  <text class="mono" x="52" y="184" font-size="15">[YOUR ROLE] / [SHORT POSITIONING]</text>
+
+  <text class="mono" x="52" y="238" font-size="12" letter-spacing="1.5">PORTFOLIO</text>
+  <text class="link" x="52" y="266" font-size="15">imano177.github.io/portfolio</text>
+
+  <text class="mono" x="560" y="128" font-size="12" letter-spacing="1.5">CONTACT ROUTES</text>
+  <text class="text" x="560" y="164" font-size="14">email</text>
+  <text class="mono" x="630" y="164" font-size="14">your.email@example.com</text>
+  <text class="text" x="560" y="198" font-size="14">gmail</text>
+  <text class="mono" x="630" y="198" font-size="14">your.gmail@gmail.com</text>
+  <text class="text" x="560" y="232" font-size="14">discord</text>
+  <text class="mono" x="630" y="232" font-size="14">YOUR_DISCORD_ID</text>
+  <line class="divider" x1="560" y1="256" x2="908" y2="256" />
+  <text class="mono" x="560" y="282" font-size="12">replace placeholders before sharing</text>
+</svg>
