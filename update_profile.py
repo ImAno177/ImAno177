@@ -39,7 +39,6 @@ RIGHT_ALIGNED_DOTS = (
     "software_data_dots",
     "hardware_data_dots",
     "email_data_dots",
-    "gmail_data_dots",
     "discord_data_dots",
     "portfolio_data_dots",
     "github_data_dots",
@@ -52,7 +51,7 @@ def load_profile() -> dict:
     profile = json.loads(PROFILE_PATH.read_text(encoding="utf-8"))
     sections = {
         "terminal": ("os", "host", "kernel", "ide"),
-        "contact": ("email", "gmail", "discord", "portfolio"),
+        "contact": ("email", "discord", "portfolio"),
     }
     if not isinstance(profile, dict) or not isinstance(profile.get("username"), str) or not profile["username"]:
         raise ValueError("profile.json must define a non-empty username")
@@ -62,9 +61,15 @@ def load_profile() -> dict:
         values = profile.get(section)
         if not isinstance(values, dict) or any(not isinstance(values.get(key), str) for key in keys):
             raise ValueError(f"profile.json is missing valid {section} fields")
-    for section in ("languages", "hobbies"):
+    nested_sections = {
+        "languages": ("programming", "computer", "real"),
+        "hobbies": ("software", "hardware"),
+    }
+    for section, keys in nested_sections.items():
         values = profile["terminal"].get(section)
-        if not isinstance(values, dict) or any(not isinstance(value, str) for value in values.values()):
+        if not isinstance(values, dict) or any(
+            not isinstance(values.get(key), str) for key in keys
+        ):
             raise ValueError(f"profile.json is missing valid terminal.{section} fields")
     return profile
 
@@ -245,7 +250,6 @@ def profile_values(profile: dict) -> dict[str, str]:
         "software_data": terminal["hobbies"]["software"],
         "hardware_data": terminal["hobbies"]["hardware"],
         "email_data": contact["email"],
-        "gmail_data": contact["gmail"],
         "discord_data": contact["discord"],
         "portfolio_data": re.sub(r"^https?://", "", portfolio),
         "github_data": f"github.com/{profile['username']}",
@@ -287,21 +291,49 @@ def plain_text(value: str) -> str:
     return html.unescape(re.sub(r"<[^>]+>", "", value))
 
 
-def right_align_marker(svg: str, marker_id: str, fill) -> str:
+DOT_TSPAN_PATTERN = re.compile(
+    r'<tspan\b[^>]*\bid=["\'][^"\']*_dots["\'][^>]*>.*?</tspan>',
+    re.DOTALL,
+)
+
+
+def required_alignment_columns(svg: str) -> int:
+    lengths = (
+        len(plain_text(DOT_TSPAN_PATTERN.sub(" ", line)).strip())
+        for line in svg.splitlines()
+        if 'x="390"' in line
+    )
+    return max(ALIGNMENT_COLUMNS, *lengths)
+
+
+def resize_svg(svg: str, alignment_columns: int) -> str:
+    width = max(985, 985 + (alignment_columns - ALIGNMENT_COLUMNS) * 10)
+    svg = re.sub(r'width="\d+px"', f'width="{width}px"', svg)
+    return re.sub(
+        r'viewBox="0 0 \d+ 530"',
+        f'viewBox="0 0 {width} 530"',
+        svg,
+        count=1,
+    )
+
+
+def right_align_marker(
+    svg: str, marker_id: str, fill, alignment_columns: int
+) -> str:
     match = marker_match(svg, marker_id)
     prefix = plain_text(match.group("prefix")).lstrip()
     suffix = plain_text(match.group("suffix")).strip()
-    padding = ALIGNMENT_COLUMNS - len(prefix) - len(suffix)
+    padding = alignment_columns - len(prefix) - len(suffix)
     if padding < 0:
         raise ValueError(f"SVG field overflows alignment column: {marker_id}")
     return svg[: match.start()] + match.group("prefix") + fill(padding) + match.group("close") + match.group("suffix") + svg[match.end() :]
 
 
-def align_rule(svg: str, rule_id: str) -> str:
+def align_rule(svg: str, rule_id: str, alignment_columns: int) -> str:
     match = marker_match(svg, rule_id)
     prefix = plain_text(match.group("prefix")).lstrip()
     suffix = plain_text(match.group("suffix")).strip()
-    padding = ALIGNMENT_COLUMNS - len(prefix) - len(suffix)
+    padding = alignment_columns - len(prefix) - len(suffix)
     if padding < 0:
         raise ValueError(f"SVG rule overflows alignment column: {rule_id}")
     return svg[: match.start()] + match.group("prefix") + rule_fill(padding) + match.group("close") + match.group("suffix") + svg[match.end() :]
@@ -315,8 +347,10 @@ def align_marker_to_column(svg: str, marker_id: str, column: int) -> str:
     return replace_tspan_value(svg, marker_id, " " * padding)
 
 
-def align_diff_group(svg: str, values: dict[str, object], open_column: int) -> str:
-    close_column = ALIGNMENT_COLUMNS - 1
+def align_diff_group(
+    svg: str, values: dict[str, object], open_column: int, alignment_columns: int
+) -> str:
+    close_column = alignment_columns - 1
     additions = f"{values['loc_add']}++"
     deletions = f"{values['loc_del']}--"
     midpoint = (open_column + close_column + 1) // 2
@@ -341,14 +375,14 @@ def align_diff_group(svg: str, values: dict[str, object], open_column: int) -> s
     return svg
 
 
-def align_stats(svg: str, values: dict[str, object]) -> str:
+def align_stats(svg: str, values: dict[str, object], alignment_columns: int) -> str:
     svg = replace_tspan_value(
         svg, "repo_data_dots", terminal_dots(values["repo_data"], 6)
     )
     repo_prefix = plain_text(
         marker_match(svg, "repo_separator_dots").group("prefix")
     ).lstrip()
-    separator_column = max(ALIGNMENT_COLUMNS // 2 - 1, len(repo_prefix))
+    separator_column = max(alignment_columns // 2 - 1, len(repo_prefix))
 
     for dots_id, value_id in (
         ("commit_data_dots", "commit_data"),
@@ -363,7 +397,7 @@ def align_stats(svg: str, values: dict[str, object]) -> str:
 
     for marker_id in STAT_SEPARATOR_MARKERS:
         svg = align_marker_to_column(svg, marker_id, separator_column)
-    return align_diff_group(svg, values, separator_column)
+    return align_diff_group(svg, values, separator_column, alignment_columns)
 
 
 def replace_tspan_value(svg: str, element_id: str, value: object) -> str:
@@ -385,12 +419,13 @@ def update_svg(path: Path, values: dict[str, object]) -> None:
     svg = path.read_text(encoding="utf-8")
     for element_id, value in values.items():
         svg = replace_tspan_value(svg, element_id, value)
+    alignment_columns = required_alignment_columns(svg)
     for rule_id in RULE_DOTS:
-        svg = align_rule(svg, rule_id)
-    svg = align_stats(svg, values)
+        svg = align_rule(svg, rule_id, alignment_columns)
+    svg = align_stats(svg, values, alignment_columns)
     for dots_id in RIGHT_ALIGNED_DOTS:
-        svg = right_align_marker(svg, dots_id, dot_fill)
-    path.write_text(svg, encoding="utf-8", newline="\n")
+        svg = right_align_marker(svg, dots_id, dot_fill, alignment_columns)
+    path.write_text(resize_svg(svg, alignment_columns), encoding="utf-8", newline="\n")
 
 
 def update_readme(profile: dict) -> None:
@@ -399,7 +434,6 @@ def update_readme(profile: dict) -> None:
     contact = profile["contact"]
     links = (
         f"[Email](mailto:{contact['email']}) · "
-        f"[Gmail](mailto:{contact['gmail']}) · "
         f"[Discord](https://discord.com/users/{contact['discord']}) · "
         f"[Portfolio]({contact['portfolio']})"
     )
