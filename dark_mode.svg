@@ -1,35 +1,76 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="960" height="340" viewBox="0 0 960 340" role="img" aria-labelledby="title desc">
-  <title id="title">ImAno177 GitHub profile</title>
-  <desc id="desc">A minimal dark GitHub profile card with placeholder contact details and a portfolio link.</desc>
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" font-family="ConsolasFallback,Consolas,monospace" width="985px" height="530px" font-size="16px" viewBox="0 0 985 530" role="img" aria-labelledby="title desc">
+  <title id="title">ImAno177 terminal profile</title>
+  <desc id="desc">A terminal-style GitHub profile for ImAno177 with contact routes, portfolio and placeholder profile fields.</desc>
   <style>
-    .background { fill: #0d1117; }
-    .frame { fill: #0d1117; stroke: #30363d; stroke-width: 1; }
-    .divider { stroke: #30363d; stroke-width: 1; }
-    .text { fill: #f0f6fc; font-family: ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; }
-    .mono { fill: #8b949e; font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; }
-    .accent { fill: #39d353; }
-    .link { fill: #58a6ff; }
+    @font-face {
+      src: local('Consolas'), local('Consolas Bold');
+      font-family: 'ConsolasFallback';
+      font-display: swap;
+      -webkit-size-adjust: 109%;
+      size-adjust: 109%;
+    }
+    .key { fill: #ffa657; }
+    .value { fill: #a5d6ff; }
+    .accent { fill: #3fb950; }
+    .cc { fill: #616e7f; }
+    text, tspan { white-space: pre; }
   </style>
 
-  <rect class="background" width="960" height="340" />
-  <rect class="frame" x="24" y="24" width="912" height="292" rx="8" />
-  <text class="mono" x="52" y="64" font-size="13" letter-spacing="2">IMANO177 / GITHUB PROFILE</text>
-  <circle class="accent" cx="884" cy="58" r="5" />
-  <line class="divider" x1="52" y1="88" x2="908" y2="88" />
+  <rect width="985px" height="530px" fill="#161b22" rx="15" />
+  <text x="15" y="30" fill="#c9d1d9" class="ascii">
+    <tspan x="15" y="30">        .--------------------------------.        </tspan>
+    <tspan x="15" y="50">      .'                                  '.      </tspan>
+    <tspan x="15" y="70">     /    .--------------------------.    \      </tspan>
+    <tspan x="15" y="90">    /    /                            \    \     </tspan>
+    <tspan x="15" y="110">   |    |      ____  __  __    _      |    |    </tspan>
+    <tspan x="15" y="130">   |    |     |_  / |  \/  |  / \     |    |    </tspan>
+    <tspan x="15" y="150">   |    |      / /  | |\/| | / _ \    |    |    </tspan>
+    <tspan x="15" y="170">   |    |     / /_  | |  | |/ ___ \   |    |    </tspan>
+    <tspan x="15" y="190">   |    |    /____| |_|  |_/_/   \_\  |    |    </tspan>
+    <tspan x="15" y="210">   |    |          &gt;_ imano177        |    |    </tspan>
+    <tspan x="15" y="230">   |    |       terminal profile      |    |    </tspan>
+    <tspan x="15" y="250">   |    |    .--------------------.   |    |    </tspan>
+    <tspan x="15" y="270">   |    |    |  [ status: online ] |   |    |    </tspan>
+    <tspan x="15" y="290">   |    |    '--------------------'   |    |    </tspan>
+    <tspan x="15" y="310">   |    |                            |    |    </tspan>
+    <tspan x="15" y="330">   |    |          .--------.        |    |    </tspan>
+    <tspan x="15" y="350">   |    |         /  .--.  \       |    |    </tspan>
+    <tspan x="15" y="370">   |    |         \  '--'  /       |    |    </tspan>
+    <tspan x="15" y="390">   |    |          '------'        |    |    </tspan>
+    <tspan x="15" y="410">   |     \________________________/     |    </tspan>
+    <tspan x="15" y="430">    \                                    /     </tspan>
+    <tspan x="15" y="450">     '----------------------------------'      </tspan>
+    <tspan x="15" y="470">                                                </tspan>
+    <tspan x="15" y="490">              type / to explore                 </tspan>
+    <tspan x="15" y="510">                                                </tspan>
+  </text>
 
-  <text class="text" x="52" y="152" font-size="38" font-weight="700">[YOUR NAME]</text>
-  <text class="mono" x="52" y="184" font-size="15">[YOUR ROLE] / [SHORT POSITIONING]</text>
-
-  <text class="mono" x="52" y="238" font-size="12" letter-spacing="1.5">PORTFOLIO</text>
-  <text class="link" x="52" y="266" font-size="15">imano177.github.io/portfolio</text>
-
-  <text class="mono" x="560" y="128" font-size="12" letter-spacing="1.5">CONTACT ROUTES</text>
-  <text class="text" x="560" y="164" font-size="14">email</text>
-  <text class="mono" x="630" y="164" font-size="14">your.email@example.com</text>
-  <text class="text" x="560" y="198" font-size="14">gmail</text>
-  <text class="mono" x="630" y="198" font-size="14">your.gmail@gmail.com</text>
-  <text class="text" x="560" y="232" font-size="14">discord</text>
-  <text class="mono" x="630" y="232" font-size="14">YOUR_DISCORD_ID</text>
-  <line class="divider" x1="560" y1="256" x2="908" y2="256" />
-  <text class="mono" x="560" y="282" font-size="12">replace placeholders before sharing</text>
+  <text x="390" y="30" fill="#c9d1d9">
+    <tspan x="390" y="30">imano@github</tspan><tspan class="cc"> ------------------------------------------</tspan>
+    <tspan x="390" y="50" class="cc">. </tspan><tspan class="key">OS</tspan>:<tspan class="cc"> ......................... </tspan><tspan class="value">Windows / Linux</tspan>
+    <tspan x="390" y="70" class="cc">. </tspan><tspan class="key">Uptime</tspan>:<tspan class="cc"> ...................... </tspan><tspan class="value">always building</tspan>
+    <tspan x="390" y="90" class="cc">. </tspan><tspan class="key">Host</tspan>:<tspan class="cc"> ............................. </tspan><tspan class="value">ImAno177</tspan>
+    <tspan x="390" y="110" class="cc">. </tspan><tspan class="key">Kernel</tspan>:<tspan class="cc"> ..................... </tspan><tspan class="value">[YOUR ROLE]</tspan>
+    <tspan x="390" y="130" class="cc">. </tspan><tspan class="key">IDE</tspan>:<tspan class="cc"> ................................. </tspan><tspan class="value">VS Code</tspan>
+    <tspan x="390" y="150" class="cc">. </tspan>
+    <tspan x="390" y="170" class="cc">. </tspan><tspan class="key">Languages</tspan>.<tspan class="key">Programming</tspan>:<tspan class="cc"> ... </tspan><tspan class="value">JavaScript, TypeScript</tspan>
+    <tspan x="390" y="190" class="cc">. </tspan><tspan class="key">Languages</tspan>.<tspan class="key">Computer</tspan>:<tspan class="cc"> ......... </tspan><tspan class="value">HTML, CSS, Markdown</tspan>
+    <tspan x="390" y="210" class="cc">. </tspan><tspan class="key">Languages</tspan>.<tspan class="key">Real</tspan>:<tspan class="cc"> ......................... </tspan><tspan class="value">Vietnamese, English</tspan>
+    <tspan x="390" y="230" class="cc">. </tspan>
+    <tspan x="390" y="250" class="cc">. </tspan><tspan class="key">Hobbies</tspan>.<tspan class="key">Software</tspan>:<tspan class="cc"> .... </tspan><tspan class="value">Ricing, UI experiments</tspan>
+    <tspan x="390" y="270" class="cc">. </tspan><tspan class="key">Hobbies</tspan>.<tspan class="key">Hardware</tspan>:<tspan class="cc"> .......... </tspan><tspan class="value">[YOUR SETUP]</tspan>
+    <tspan x="390" y="290" class="cc">. </tspan>
+    <tspan x="390" y="310">- Contact</tspan><tspan class="cc"> ------------------------------------------</tspan>
+    <tspan x="390" y="330" class="cc">. </tspan><tspan class="key">Email</tspan>.<tspan class="key">Personal</tspan>:<tspan class="cc"> .......... </tspan><tspan class="value">your.email@example.com</tspan>
+    <tspan x="390" y="350" class="cc">. </tspan><tspan class="key">Gmail</tspan>:<tspan class="cc"> ............................. </tspan><tspan class="value">your.gmail@gmail.com</tspan>
+    <tspan x="390" y="370" class="cc">. </tspan><tspan class="key">Discord</tspan>:<tspan class="cc"> ........................... </tspan><tspan class="value">YOUR_DISCORD_ID</tspan>
+    <tspan x="390" y="390" class="cc">. </tspan><tspan class="key">Portfolio</tspan>:<tspan class="cc"> ........................ </tspan><tspan class="value">imano177.github.io/portfolio</tspan>
+    <tspan x="390" y="410" class="cc">. </tspan><tspan class="key">GitHub</tspan>:<tspan class="cc"> ........................... </tspan><tspan class="value">github.com/ImAno177</tspan>
+    <tspan x="390" y="430" class="cc">. </tspan>
+    <tspan x="390" y="450">- GitHub Stats</tspan><tspan class="cc"> -----------------------------------</tspan>
+    <tspan x="390" y="470" class="cc">. </tspan><tspan class="key">Repos</tspan>:<tspan class="cc"> ............................... </tspan><tspan class="value">[AUTO]</tspan>
+    <tspan x="390" y="490" class="cc">. </tspan><tspan class="key">Followers</tspan>:<tspan class="cc"> ........................ </tspan><tspan class="value">[AUTO]</tspan>
+    <tspan x="390" y="510" class="cc">. </tspan><tspan class="key">Status</tspan>:<tspan class="cc"> ................................ </tspan><tspan class="accent">online / open to ideas</tspan>
+  </text>
 </svg>
