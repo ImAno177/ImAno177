@@ -49,7 +49,7 @@
   <text x="390" y="30" fill="#1f2328">
     <tspan x="390" y="30">imano@github</tspan><tspan class="cc"> ------------------------------------------</tspan>
     <tspan x="390" y="50" class="cc">. </tspan><tspan class="key">OS</tspan>:<tspan class="cc"> ......................... </tspan><tspan class="value">Windows / Linux</tspan>
-    <tspan x="390" y="70" class="cc">. </tspan><tspan class="key">Uptime</tspan>:<tspan class="cc"> ...................... </tspan><tspan class="value">always building</tspan>
+    <tspan x="390" y="70" class="cc">. </tspan><tspan class="key">Uptime</tspan>:<tspan class="cc"> ............... </tspan><tspan class="value" id="uptime_data">2 years, 5 months, 18 days</tspan>
     <tspan x="390" y="90" class="cc">. </tspan><tspan class="key">Host</tspan>:<tspan class="cc"> ............................. </tspan><tspan class="value">ImAno177</tspan>
     <tspan x="390" y="110" class="cc">. </tspan><tspan class="key">Kernel</tspan>:<tspan class="cc"> ..................... </tspan><tspan class="value">[YOUR ROLE]</tspan>
     <tspan x="390" y="130" class="cc">. </tspan><tspan class="key">IDE</tspan>:<tspan class="cc"> ................................. </tspan><tspan class="value">VS Code</tspan>
@@ -69,8 +69,8 @@
     <tspan x="390" y="410" class="cc">. </tspan><tspan class="key">GitHub</tspan>:<tspan class="cc"> .................. </tspan><tspan class="value">github.com/ImAno177</tspan>
     <tspan x="390" y="430" class="cc">. </tspan>
     <tspan x="390" y="450">- GitHub Stats</tspan><tspan class="cc"> -----------------------------------</tspan>
-    <tspan x="390" y="470" class="cc">. </tspan><tspan class="key">Repos</tspan>:<tspan class="cc"> ............................... </tspan><tspan class="value">[AUTO]</tspan>
-    <tspan x="390" y="490" class="cc">. </tspan><tspan class="key">Followers</tspan>:<tspan class="cc"> ........................ </tspan><tspan class="value">[AUTO]</tspan>
-    <tspan x="390" y="510" class="cc">. </tspan><tspan class="key">Status</tspan>:<tspan class="cc"> .................... </tspan><tspan class="accent">online / open to ideas</tspan>
+    <tspan x="390" y="470" class="cc">. </tspan><tspan class="key">Repos</tspan>:<tspan class="cc"> .......... </tspan><tspan class="value" id="repo_data">24</tspan><tspan class="cc"> | </tspan><tspan class="key">Stars</tspan>:<tspan class="cc"> ......... </tspan><tspan class="value" id="star_data">0</tspan>
+    <tspan x="390" y="490" class="cc">. </tspan><tspan class="key">Commits</tspan>:<tspan class="cc"> ......... </tspan><tspan class="value" id="commit_data">312</tspan><tspan class="cc"> | </tspan><tspan class="key">Followers</tspan>:<tspan class="cc"> .. </tspan><tspan class="value" id="follower_data">1</tspan>
+    <tspan x="390" y="510" class="cc">. </tspan><tspan class="key">Updated</tspan>:<tspan class="cc"> .............. </tspan><tspan class="accent" id="updated_data">2026-09-07 01:58Z</tspan>
   </text>
 </svg>
