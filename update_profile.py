@@ -22,7 +22,10 @@ BIRTH_DATE = os.environ.get("PROFILE_BIRTH_DATE", "2005-07-17")
 API_ROOT = "https://api.github.com"
 CACHE_PATH = ROOT / "cache" / "profile_stats.json"
 ALIGNMENT_COLUMNS = 60
-STATS_SEPARATOR_COLUMN = 20
+INLINE_STATS = (
+    ("repo_data_dots", "repo_data"),
+    ("commit_data_dots", "commit_data"),
+)
 RIGHT_ALIGNED_DOTS = (
     "os_data_dots",
     "uptime_data_dots",
@@ -215,7 +218,7 @@ def terminal_dots(value: object, width: int) -> str:
     return dot_fill(width - len(str(value)))
 
 
-def right_align_dots(svg: str, dots_id: str) -> str:
+def marker_match(svg: str, dots_id: str) -> re.Match[str]:
     pattern = re.compile(
         rf'(?m)^(?P<prefix>.*?<tspan\b[^>]*\bid=["\']{re.escape(dots_id)}["\'][^>]*>)'
         rf'(?P<dots>.*?)(?P<close></tspan>)(?P<suffix>.*)$'
@@ -223,13 +226,42 @@ def right_align_dots(svg: str, dots_id: str) -> str:
     match = pattern.search(svg)
     if match is None:
         raise ValueError(f"Missing SVG marker: {dots_id}")
-    strip_tags = lambda value: html.unescape(re.sub(r"<[^>]+>", "", value))
-    prefix = strip_tags(match.group("prefix")).lstrip()
-    suffix = strip_tags(match.group("suffix")).strip()
+    return match
+
+
+def plain_text(value: str) -> str:
+    return html.unescape(re.sub(r"<[^>]+>", "", value))
+
+
+def right_align_dots(svg: str, dots_id: str) -> str:
+    match = marker_match(svg, dots_id)
+    prefix = plain_text(match.group("prefix")).lstrip()
+    suffix = plain_text(match.group("suffix")).strip()
     padding = ALIGNMENT_COLUMNS - len(prefix) - len(suffix)
     if padding < 0:
         raise ValueError(f"SVG field overflows alignment column: {dots_id}")
     return svg[: match.start()] + match.group("prefix") + dot_fill(padding) + match.group("close") + match.group("suffix") + svg[match.end() :]
+
+
+def align_inline_stats(svg: str, values: dict[str, object]) -> str:
+    separator_column = ALIGNMENT_COLUMNS // 2 - 1
+    prefixes: dict[str, str] = {}
+    for dots_id, value_id in INLINE_STATS:
+        prefix = plain_text(marker_match(svg, dots_id).group("prefix")).lstrip()
+        prefixes[dots_id] = prefix
+        separator_column = max(
+            separator_column,
+            len(prefix) + len(str(values[value_id])),
+        )
+    for dots_id, value_id in INLINE_STATS:
+        svg = replace_tspan_value(
+            svg,
+            dots_id,
+            terminal_dots(
+                values[value_id], separator_column - len(prefixes[dots_id])
+            ),
+        )
+    return svg
 
 
 def replace_tspan_value(svg: str, element_id: str, value: object) -> str:
@@ -251,6 +283,7 @@ def update_svg(path: Path, values: dict[str, object]) -> None:
     svg = path.read_text(encoding="utf-8")
     for element_id, value in values.items():
         svg = replace_tspan_value(svg, element_id, value)
+    svg = align_inline_stats(svg, values)
     for dots_id in RIGHT_ALIGNED_DOTS:
         svg = right_align_dots(svg, dots_id)
     path.write_text(svg, encoding="utf-8", newline="\n")
@@ -268,23 +301,10 @@ def main() -> None:
     loc = format_number(additions - deletions)
     loc_add = format_number(additions)
     loc_del = format_number(deletions)
-    repo_prefix_width = len(". Repos:")
-    commit_prefix_width = len(". Commits:")
-    stats_separator_column = max(
-        STATS_SEPARATOR_COLUMN,
-        repo_prefix_width + len(str(repos)),
-        commit_prefix_width + len(str(commits)),
-    )
     values = {
         "uptime_data": uptime,
-        "repo_data_dots": terminal_dots(
-            repos, stats_separator_column - repo_prefix_width
-        ),
         "repo_data": repos,
         "star_data": stars,
-        "commit_data_dots": terminal_dots(
-            commits, stats_separator_column - commit_prefix_width
-        ),
         "commit_data": commits,
         "follower_data": followers,
         "loc_data": loc,
