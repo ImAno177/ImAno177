@@ -28,7 +28,7 @@
       "additions": 1382,
       "complete": true,
       "deletions": 504,
-      "pushed_at": "2026-11-12T12:08:53Z"
+      "pushed_at": "2026-11-13T11:50:18Z"
     },
     "ImAno177/NT213_garak": {
       "additions": 43985,
@@ -37,28 +37,28 @@
       "pushed_at": "2026-01-25T02:40:18Z"
     },
     "ImAno177/PaperReader": {
-      "additions": 98607,
+      "additions": 99714,
       "complete": true,
-      "deletions": 29453,
-      "pushed_at": "2026-11-12T12:11:50Z"
+      "deletions": 32729,
+      "pushed_at": "2026-11-14T03:47:38Z"
     },
     "ImAno177/PaperReader-source-sample": {
       "additions": 1427,
       "complete": true,
       "deletions": 406,
-      "pushed_at": "2026-11-11T23:07:50Z"
+      "pushed_at": "2026-11-13T14:49:37Z"
     },
     "ImAno177/PaperReader-sources": {
-      "additions": 4850,
+      "additions": 4981,
       "complete": true,
-      "deletions": 354,
-      "pushed_at": "2026-11-12T12:11:36Z"
+      "deletions": 460,
+      "pushed_at": "2026-11-13T20:19:19Z"
     },
     "ImAno177/PaperReader-theme-sample": {
       "additions": 1485,
       "complete": true,
       "deletions": 144,
-      "pushed_at": "2026-11-11T23:07:56Z"
+      "pushed_at": "2026-11-13T14:49:42Z"
     },
     "ImAno177/android-security-lab": {
       "additions": 472,
@@ -85,10 +85,10 @@
       "pushed_at": "2026-08-25T07:27:00Z"
     },
     "ImAno177/cstack": {
-      "additions": 801179,
+      "additions": 801297,
       "complete": true,
-      "deletions": 752889,
-      "pushed_at": "2026-11-11T14:13:09Z"
+      "deletions": 752911,
+      "pushed_at": "2026-11-13T15:42:32Z"
     },
     "ImAno177/h1cli": {
       "additions": 2135,
@@ -145,10 +145,10 @@
       "pushed_at": "2025-12-12T16:28:06Z"
     },
     "ImAno177/paperreader-site": {
-      "additions": 11543,
+      "additions": 12222,
       "complete": true,
-      "deletions": 2887,
-      "pushed_at": "2026-11-04T06:30:59Z"
+      "deletions": 3656,
+      "pushed_at": "2026-11-14T02:21:28Z"
     },
     "ImAno177/portfolio": {
       "additions": 19361,
