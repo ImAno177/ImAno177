@@ -1,7 +1,7 @@
 <a href="https://github.com/ImAno177/ImAno177">
   <picture>
-    <source media="(prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/ImAno177/ImAno177/main/dark_mode.svg?v=10cd83bce81a">
-    <img alt="ImAno177's GitHub profile" src="https://raw.githubusercontent.com/ImAno177/ImAno177/main/light_mode.svg?v=adb4c25db512">
+    <source media="(prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/ImAno177/ImAno177/main/dark_mode.svg?v=c2305a48815b">
+    <img alt="ImAno177's GitHub profile" src="https://raw.githubusercontent.com/ImAno177/ImAno177/main/light_mode.svg?v=5f70d0d8a726">
   </picture>
 </a>
 
